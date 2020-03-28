@@ -193,13 +193,13 @@ def train_regression(args, model, device, train_loader, optimizer, epoch, Myy, M
     grad_yx = np.empty([0, d+1, d_out])
 
     # learning rate for Myx
-    lr2 = args.lr
+    lr2 = args.lr_yx
     
     # decay rate
     lr2 = lr2 * (10 / (10 + np.sqrt(epoch)))
     
     # learning rate for Myy
-    lr1 = args.lr
+    lr1 = args.lr_yy
     lr1 = lr1 * (10 / (10 + np.sqrt(epoch)))
 
     for batch_idx, (data, target, weight) in enumerate(train_loader):
@@ -281,7 +281,7 @@ def test_regression(args, model, Myy, Myx, device, test_loader, mean0, var0):
 
             y_var = np.concatenate((y_var, varY), axis = 0)
 
-    test_loss = torch.sqrt(test_loss / len(test_loader.dataset))
+    test_loss = torch.sqrt(test_loss / len(test_loader.dataset) / d_out)
     print('Average loss: {:.4f}\n'.format(test_loss))
 
     return y_prediction, y_var, test_loss
@@ -389,6 +389,10 @@ def main():
                         help='number of epochs in training (default: 100)')
     parser.add_argument('--lr', type=float, default=0.00001, metavar='LR',
                         help='learning rate (default: 0.0001)')
+    parser.add_argument('--lr_yx', type=float, default=0.00001, metavar='LR',
+                        help='learning rate for yx (default: 0.0001)')
+    parser.add_argument('--lr_yy', type=float, default=0.00001, metavar='LR',
+                        help='learning rate for yy (default: 0.0001)')
     parser.add_argument('--momentum', type=float, default=0.5, metavar='M',
                         help='SGD momentum (default: 0.5)')
     parser.add_argument('--no-cuda', action='store_true', default=False,
